@@ -23,7 +23,7 @@ Use cases include:
 
 Plugin highlights:
 
-* Custom post type for creating and managing popup content.
+* Custom post type for creating and managing pop-up content.
 * Works with shortcodes and dynamic form plugins.
 * Trigger shortcode for buttons/links with custom labels and classes.
 * Optional auto-open per popup.
@@ -34,18 +34,18 @@ Plugin highlights:
 1. Upload the plugin files to `/wp-content/plugins/panasys-popups`, or install through the WordPress plugins screen.
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 3. Go to **Panasys Popups** in admin and create a popup.
-4. Add `[panasys_popup id="123"]` where popup markup should be rendered.
+4. Add `[panasys_popup id="123"]` where the pop-up markup should be rendered.
 5. Add `[panasys_popup_trigger id="123" label="Open popup"]` to place the trigger button.
 
 == Frequently Asked Questions ==
 
-= Can I show forms inside a popup? =
+= Can I show forms inside a pop-up? =
 
-Yes. Insert your form shortcode (such as Contact Form 7) in popup content.
+Yes. Insert your form shortcode (such as Contact Form 7) in the pop-up content.
 
 = Can I show images and galleries? =
 
-Yes. Add images directly in the popup editor content.
+Yes. Add images directly in the pop-up editor content.
 
 = Is it Gutenberg compatible? =
 
@@ -71,21 +71,20 @@ Before release, run the following:
 2. **Coding standards:** `composer run phpcs`.
 3. **Unit tests:** `composer test` (WordPress test suite).
 4. **Manual browser checks:**
-   * Verify popup open/close behavior by trigger, overlay click, and ESC key.
+   * Verify pop-up open/close behavior by trigger, overlay click, and ESC key.
    * Verify shortcodes render forms and images correctly.
-   * Verify auto-open behavior from popup settings.
+   * Verify auto-open behavior fromthe pop-up settings.
    * Verify responsive behavior on mobile widths.
 
 == Screenshots ==
 
 1. Popup post type editor with popup settings metabox.
-2. Popup rendering on the frontend with trigger button.
+2. Popup rendering on the frontend with a trigger button.
 
 == Changelog ==
 
 = 1.1.0 =
-* Added 1-day popup suppression after user closes a popup.
-* Added admin donation/help notice with dismiss option and PayPal donation link.
+* Added popup suppression after the user closes a popup.
 
 = 1.0.0 =
 * Initial release.
