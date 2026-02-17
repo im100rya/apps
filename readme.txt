@@ -4,7 +4,7 @@ Tags: popup, modal, shortcode, forms, images
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -82,6 +82,10 @@ Before release, run the following:
 2. Popup rendering on the frontend with trigger button.
 
 == Changelog ==
+
+= 1.1.0 =
+* Added 1-day popup suppression after user closes a popup.
+* Added admin donation/help notice with dismiss option and PayPal donation link.
 
 = 1.0.0 =
 * Initial release.

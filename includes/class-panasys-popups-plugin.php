@@ -44,6 +44,8 @@ class Panasys_Popups_Plugin {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'add_meta_boxes', array( $this, 'register_meta_boxes' ) );
 		add_action( 'save_post_panasys_popup', array( $this, 'save_popup_meta' ) );
+		add_action( 'admin_notices', array( $this, 'render_donation_notice' ) );
+		add_action( 'admin_init', array( $this, 'handle_donation_notice_dismissal' ) );
 	}
 
 	/**
@@ -90,6 +92,64 @@ class Panasys_Popups_Plugin {
 				'exclude_from_search'=> true,
 			)
 		);
+	}
+
+
+
+	/**
+	 * Render admin donation notice for plugin users.
+	 *
+	 * @return void
+	 */
+	public function render_donation_notice() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( $screen && 'plugins' !== $screen->id && 'dashboard' !== $screen->id && 'edit-panasys_popup' !== $screen->id && 'panasys_popup' !== $screen->id ) {
+			return;
+		}
+
+		if ( get_user_meta( get_current_user_id(), '_panasys_popups_donation_notice_dismissed', true ) ) {
+			return;
+		}
+
+		$dismiss_url = wp_nonce_url(
+			add_query_arg(
+				array(
+					'panasys_popups_notice' => 'dismiss',
+				),
+				admin_url()
+			),
+			'panasys_popups_dismiss_notice'
+		);
+
+		echo '<div class="notice notice-info is-dismissible">';
+		echo '<p>' . esc_html__( 'Enjoying Panasys Popups? Support future updates by donating.', 'panasys-popups' ) . ' ';
+		echo '<a href="' . esc_url( 'https://www.paypal.me/100rya' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Donate via PayPal', 'panasys-popups' ) . '</a>';
+		echo ' · <a href="' . esc_url( $dismiss_url ) . '">' . esc_html__( 'Dismiss', 'panasys-popups' ) . '</a></p>';
+		echo '</div>';
+	}
+
+	/**
+	 * Handle admin donation notice dismissal.
+	 *
+	 * @return void
+	 */
+	public function handle_donation_notice_dismissal() {
+		if ( ! isset( $_GET['panasys_popups_notice'] ) || 'dismiss' !== $_GET['panasys_popups_notice'] ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		check_admin_referer( 'panasys_popups_dismiss_notice' );
+		update_user_meta( get_current_user_id(), '_panasys_popups_donation_notice_dismissed', 1 );
+		wp_safe_redirect( remove_query_arg( array( 'panasys_popups_notice', '_wpnonce' ) ) );
+		exit;
 	}
 
 	/**
@@ -201,7 +261,7 @@ class Panasys_Popups_Plugin {
 
 		ob_start();
 		?>
-		<div class="panasys-popup" id="panasys-popup-<?php echo esc_attr( (string) $post_id ); ?>" data-auto-open="<?php echo esc_attr( '1' === $auto_open ? '1' : '0' ); ?>" aria-hidden="true">
+		<div class="panasys-popup" id="panasys-popup-<?php echo esc_attr( (string) $post_id ); ?>" data-auto-open="<?php echo esc_attr( '1' === $auto_open ? '1' : '0' ); ?>" data-hide-days="1" aria-hidden="true">
 			<div class="panasys-popup__overlay" data-panasys-close="1"></div>
 			<div class="panasys-popup__dialog" role="dialog" aria-modal="true" aria-labelledby="panasys-popup-title-<?php echo esc_attr( (string) $post_id ); ?>" style="max-width: <?php echo esc_attr( $width ); ?>;">
 				<button class="panasys-popup__close" type="button" aria-label="<?php esc_attr_e( 'Close popup', 'panasys-popups' ); ?>" data-panasys-close="1">&times;</button>
