@@ -1,5 +1,6 @@
 === Panasys Popups ===
 Contributors: 100rya
+Donate link: https://www.paypal.me/100rya
 Tags: popup, modal, shortcode, forms, images
 Requires at least: 6.0
 Tested up to: 6.7
@@ -8,48 +9,58 @@ Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Build accessible popups for shortcodes, forms, images, and rich content with a flexible shortcode trigger system.
+Create accessible popups for shortcodes, forms, images, and rich content using reusable popup entries and trigger shortcodes.
 
 == Description ==
 
-Panasys Popups helps you create reusable popups from the WordPress admin and place them anywhere using shortcodes.
+Panasys Popups is a lightweight popup plugin that lets site owners create popup entries in wp-admin and display them anywhere through shortcodes.
 
-Use cases include:
+= Key Features =
 
-* Contact forms (e.g. Contact Form 7, WPForms, Gravity Forms shortcodes).
-* Image lightboxes and promotional banners.
-* Newsletter signup forms and lead generation blocks.
-* Any content supported by the block editor/classic editor.
+* Popup custom post type for reusable popup content.
+* Works with shortcode-based forms and dynamic content.
+* Frontend popup trigger shortcode with custom label and classes.
+* 1-day suppression after closing a popup (prevents frequent repeats).
+* Optional popup auto-open behavior.
+* Accessible modal dialog semantics and ESC-to-close support.
 
-Plugin highlights:
+= Perfect For =
 
-* Custom post type for creating and managing pop-up content.
-* Works with shortcodes and dynamic form plugins.
-* Trigger shortcode for buttons/links with custom labels and classes.
-* Optional auto-open per popup.
-* Accessible dialog markup and keyboard close (ESC) support.
+* Contact forms and lead generation forms.
+* Image promos, banners, and newsletter signup prompts.
+* Any editor or block content you want inside a modal dialog.
+
+= Important Notes =
+
+* Popups can contain shortcodes, forms, and images.
+* Closing a popup stores a browser-side cooldown for 1 day.
+* The plugin includes a small admin support/donation notice for administrators.
 
 == Installation ==
 
-1. Upload the plugin files to `/wp-content/plugins/panasys-popups`, or install through the WordPress plugins screen.
-2. Activate the plugin through the 'Plugins' screen in WordPress.
-3. Go to **Panasys Popups** in admin and create a popup.
-4. Add `[panasys_popup id="123"]` where the pop-up markup should be rendered.
-5. Add `[panasys_popup_trigger id="123" label="Open popup"]` to place the trigger button.
+1. Upload the plugin folder to `/wp-content/plugins/panasys-popups`, or install via **Plugins > Add New**.
+2. Activate **Panasys Popups** from the Plugins page.
+3. Go to **Panasys Popups** in the dashboard and create your popup content.
+4. Insert `[panasys_popup id="123"]` on pages/posts/templates where popup markup should load.
+5. Insert `[panasys_popup_trigger id="123" label="Open Popup"]` where the trigger button should appear.
 
 == Frequently Asked Questions ==
 
-= Can I show forms inside a pop-up? =
+= Can I show forms (Contact Form 7, WPForms, Gravity Forms) in a popup? =
 
-Yes. Insert your form shortcode (such as Contact Form 7) in the pop-up content.
+Yes. Add the form shortcode to popup content and it will render inside the modal.
 
-= Can I show images and galleries? =
+= Can I show images and galleries in popups? =
 
-Yes. Add images directly in the pop-up editor content.
+Yes. Use the editor to insert images/media blocks directly.
 
-= Is it Gutenberg compatible? =
+= How does popup cooldown work? =
 
-Yes. The popup post type supports the block editor and REST API.
+When a visitor closes a popup, the plugin saves a browser-side cooldown value and prevents it from reopening for 1 day.
+
+= Is this plugin Gutenberg compatible? =
+
+Yes. Popup content supports the block editor and REST API.
 
 == Shortcode Reference ==
 
@@ -61,30 +72,25 @@ Yes. The popup post type supports the block editor and REST API.
 
 * `id` (required): Popup post ID.
 * `label` (optional): Trigger text.
-* `class` (optional): Space-separated CSS classes.
-
-== Testing and Quality Assurance ==
-
-Before release, run the following:
-
-1. **Lint:** `php -l` on plugin PHP files.
-2. **Coding standards:** `composer run phpcs`.
-3. **Unit tests:** `composer test` (WordPress test suite).
-4. **Manual browser checks:**
-   * Verify pop-up open/close behavior by trigger, overlay click, and ESC key.
-   * Verify shortcodes render forms and images correctly.
-   * Verify auto-open behavior fromthe pop-up settings.
-   * Verify responsive behavior on mobile widths.
+* `class` (optional): Additional CSS classes (space-separated).
 
 == Screenshots ==
 
-1. Popup post type editor with popup settings metabox.
-2. Popup rendering on the frontend with a trigger button.
+1. Popup editor screen with popup settings.
+2. Popup rendered on frontend with trigger button.
+3. Example popup containing form shortcode and image content.
 
 == Changelog ==
 
 = 1.1.0 =
-* Added popup suppression after the user closes a popup.
+* Added 1-day popup suppression after user closes a popup.
+* Added admin support/donation notice with dismiss option.
+* Improved publication docs and release guidance.
 
 = 1.0.0 =
 * Initial release.
+
+== Upgrade Notice ==
+
+= 1.1.0 =
+Adds popup cooldown behavior and admin support notice.
