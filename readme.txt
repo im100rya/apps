@@ -20,9 +20,12 @@ Panasys Popups is a lightweight popup plugin that lets site owners create popup 
 * Popup custom post type for reusable popup content.
 * Works with shortcode-based forms and dynamic content.
 * Frontend popup trigger shortcode with custom label and classes.
+* Popup list view shows shortcode snippets right next to popup names.
+* Admin editor also shows ready-to-copy shortcode snippets near popup title.
 * 1-day suppression after closing a popup (prevents frequent repeats).
 * Optional popup auto-open behavior.
 * Accessible modal dialog semantics and ESC-to-close support.
+* Responsive modal dimensions designed to avoid full-screen takeover.
 
 = Perfect For =
 

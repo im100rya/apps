@@ -47,6 +47,8 @@ class Panasys_Popups_Plugin {
 		add_action( 'admin_notices', array( $this, 'render_donation_notice' ) );
 		add_action( 'admin_init', array( $this, 'handle_donation_notice_dismissal' ) );
 		add_action( 'edit_form_after_title', array( $this, 'render_shortcode_reference_near_title' ) );
+		add_filter( 'manage_edit-panasys_popup_columns', array( $this, 'add_shortcode_column' ) );
+		add_action( 'manage_panasys_popup_posts_custom_column', array( $this, 'render_shortcode_column' ), 10, 2 );
 	}
 
 	/**
@@ -96,6 +98,41 @@ class Panasys_Popups_Plugin {
 	}
 
 
+
+
+	/**
+	 * Add shortcode column next to popup name in list table.
+	 *
+	 * @param array<string,string> $columns Existing columns.
+	 * @return array<string,string>
+	 */
+	public function add_shortcode_column( $columns ) {
+		$new_columns = array();
+		foreach ( $columns as $key => $label ) {
+			$new_columns[ $key ] = $label;
+			if ( 'title' === $key ) {
+				$new_columns['panasys_shortcodes'] = __( 'Shortcodes', 'panasys-popups' );
+			}
+		}
+
+		return $new_columns;
+	}
+
+	/**
+	 * Render shortcode column value.
+	 *
+	 * @param string $column  Column slug.
+	 * @param int    $post_id Post ID.
+	 * @return void
+	 */
+	public function render_shortcode_column( $column, $post_id ) {
+		if ( 'panasys_shortcodes' !== $column ) {
+			return;
+		}
+
+		echo '<code>[panasys_popup id="' . esc_html( (string) $post_id ) . '"]</code><br />';
+		echo '<code>[panasys_popup_trigger id="' . esc_html( (string) $post_id ) . '" label="' . esc_html__( 'Open Popup', 'panasys-popups' ) . '"]</code>';
+	}
 
 	/**
 	 * Render admin donation notice for plugin users.
