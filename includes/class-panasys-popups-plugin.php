@@ -46,6 +46,7 @@ class Panasys_Popups_Plugin {
 		add_action( 'save_post_panasys_popup', array( $this, 'save_popup_meta' ) );
 		add_action( 'admin_notices', array( $this, 'render_donation_notice' ) );
 		add_action( 'admin_init', array( $this, 'handle_donation_notice_dismissal' ) );
+		add_action( 'edit_form_after_title', array( $this, 'render_shortcode_reference_near_title' ) );
 	}
 
 	/**
@@ -150,6 +151,28 @@ class Panasys_Popups_Plugin {
 		update_user_meta( get_current_user_id(), '_panasys_popups_donation_notice_dismissed', 1 );
 		wp_safe_redirect( remove_query_arg( array( 'panasys_popups_notice', '_wpnonce' ) ) );
 		exit;
+	}
+
+
+	/**
+	 * Show popup shortcode references below title field.
+	 *
+	 * @param WP_Post $post Current post.
+	 * @return void
+	 */
+	public function render_shortcode_reference_near_title( $post ) {
+		if ( ! $post instanceof WP_Post || 'panasys_popup' !== $post->post_type ) {
+			return;
+		}
+
+		$popup_id = $post->ID ? (string) $post->ID : 'ID';
+
+		echo '<div class="notice notice-info inline" style="margin: 10px 0 15px;">';
+		echo '<p><strong>' . esc_html__( 'Popup Shortcodes', 'panasys-popups' ) . ':</strong> ';
+		echo '<code>[panasys_popup id="' . esc_html( $popup_id ) . '"]</code> ';
+		echo '<code>[panasys_popup_trigger id="' . esc_html( $popup_id ) . '" label="' . esc_html__( 'Open Popup', 'panasys-popups' ) . '"]</code>';
+		echo '</p>';
+		echo '</div>';
 	}
 
 	/**
@@ -263,7 +286,7 @@ class Panasys_Popups_Plugin {
 		?>
 		<div class="panasys-popup" id="panasys-popup-<?php echo esc_attr( (string) $post_id ); ?>" data-auto-open="<?php echo esc_attr( '1' === $auto_open ? '1' : '0' ); ?>" data-hide-days="1" aria-hidden="true">
 			<div class="panasys-popup__overlay" data-panasys-close="1"></div>
-			<div class="panasys-popup__dialog" role="dialog" aria-modal="true" aria-labelledby="panasys-popup-title-<?php echo esc_attr( (string) $post_id ); ?>" style="max-width: <?php echo esc_attr( $width ); ?>;">
+			<div class="panasys-popup__dialog" role="dialog" aria-modal="true" aria-labelledby="panasys-popup-title-<?php echo esc_attr( (string) $post_id ); ?>" style="--panasys-popup-max-width: <?php echo esc_attr( $width ); ?>;">
 				<button class="panasys-popup__close" type="button" aria-label="<?php esc_attr_e( 'Close popup', 'panasys-popups' ); ?>" data-panasys-close="1">&times;</button>
 				<h2 class="panasys-popup__title" id="panasys-popup-title-<?php echo esc_attr( (string) $post_id ); ?>"><?php echo esc_html( get_the_title( $popup ) ); ?></h2>
 				<div class="panasys-popup__content">

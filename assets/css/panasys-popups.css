@@ -5,6 +5,8 @@
   align-items: center;
   justify-content: center;
   z-index: 999999;
+  padding: 2rem;
+  box-sizing: border-box;
 }
 
 .panasys-popup.is-open {
@@ -19,8 +21,8 @@
 
 .panasys-popup__dialog {
   position: relative;
-  width: calc(100% - 2rem);
-  max-height: calc(100vh - 2rem);
+  width: min(90vw, var(--panasys-popup-max-width, 640px));
+  max-height: min(85vh, 760px);
   overflow-y: auto;
   background: #fff;
   color: #1e1e1e;
@@ -52,4 +54,15 @@
 
 .panasys-popup-trigger {
   cursor: pointer;
+}
+
+@media (max-width: 782px) {
+  .panasys-popup {
+    padding: 1rem;
+  }
+
+  .panasys-popup__dialog {
+    width: min(94vw, var(--panasys-popup-max-width, 640px));
+    max-height: 82vh;
+  }
 }
