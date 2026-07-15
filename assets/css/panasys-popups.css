@@ -24,8 +24,8 @@
   width: min(90vw, var(--panasys-popup-max-width, 640px));
   max-height: min(85vh, 760px);
   overflow-y: auto;
-  background: #fff;
-  color: #1e1e1e;
+  background: var(--panasys-popup-background-color, #fff);
+  color: var(--panasys-popup-text-color, #1e1e1e);
   border-radius: 10px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.24);
   padding: 1.25rem;

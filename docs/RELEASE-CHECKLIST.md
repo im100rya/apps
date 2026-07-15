@@ -11,9 +11,9 @@
 - [ ] Manually verify popup flows and cooldown behavior.
 
 ## WordPress.org readiness
-- [ ] Confirm author and URLs are correct.
+- [ ] Confirm WordPress.org username `im100rya`, author `Shaurya Srivastava`, company `Panasys Technologies`, and URL `https://panasys.in` are correct.
 - [ ] Confirm donation link is valid.
-- [ ] Confirm license headers and `LICENSE` file are present.
+- [ ] Confirm license headers, privacy/localStorage disclosure, and `LICENSE` file are present.
 - [ ] Prepare assets (icons/banners/screenshots).
 
 ## Distribution

@@ -1,6 +1,8 @@
 # Support & Documentation
 
-- Plugin homepage: https://panasys.in/wordpress-plugins/
+- Plugin homepage: https://panasys.in
+- Company: Panasys Technologies
+- Author: Shaurya Srivastava (`im100rya` on WordPress.org)
 - Donation link: https://www.paypal.me/100rya
 
 ## Getting help

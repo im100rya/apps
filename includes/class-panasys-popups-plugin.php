@@ -235,14 +235,24 @@ class Panasys_Popups_Plugin {
 	 * @return void
 	 */
 	public function render_popup_settings_meta_box( $post ) {
-		$width     = get_post_meta( $post->ID, '_panasys_popup_width', true );
-		$auto_open = get_post_meta( $post->ID, '_panasys_popup_auto_open', true );
+		$width            = get_post_meta( $post->ID, '_panasys_popup_width', true );
+		$auto_open        = get_post_meta( $post->ID, '_panasys_popup_auto_open', true );
+		$background_color = get_post_meta( $post->ID, '_panasys_popup_background_color', true );
+		$text_color       = get_post_meta( $post->ID, '_panasys_popup_text_color', true );
 
 		wp_nonce_field( 'panasys_popup_settings', 'panasys_popup_settings_nonce' );
 		?>
 		<p>
-			<label for="panasys-popup-width"><strong><?php esc_html_e( 'Popup width (px or %)', 'panasys-popups' ); ?></strong></label>
+			<label for="panasys-popup-width"><strong><?php esc_html_e( 'Modal width (px or %)', 'panasys-popups' ); ?></strong></label>
 			<input id="panasys-popup-width" name="panasys_popup_width" type="text" class="widefat" value="<?php echo esc_attr( $width ? $width : '640px' ); ?>" />
+		</p>
+		<p>
+			<label for="panasys-popup-background-color"><strong><?php esc_html_e( 'Modal background color', 'panasys-popups' ); ?></strong></label>
+			<input id="panasys-popup-background-color" name="panasys_popup_background_color" type="color" value="<?php echo esc_attr( $background_color ? $background_color : '#ffffff' ); ?>" />
+		</p>
+		<p>
+			<label for="panasys-popup-text-color"><strong><?php esc_html_e( 'Modal text color', 'panasys-popups' ); ?></strong></label>
+			<input id="panasys-popup-text-color" name="panasys_popup_text_color" type="color" value="<?php echo esc_attr( $text_color ? $text_color : '#1e1e1e' ); ?>" />
 		</p>
 		<p>
 			<label for="panasys-popup-auto-open">
@@ -276,10 +286,14 @@ class Panasys_Popups_Plugin {
 			return;
 		}
 
-		$width = isset( $_POST['panasys_popup_width'] ) ? sanitize_text_field( wp_unslash( $_POST['panasys_popup_width'] ) ) : '640px';
-		$width = preg_match( '/^[0-9.]+(px|%)$/', $width ) ? $width : '640px';
+		$width            = isset( $_POST['panasys_popup_width'] ) ? sanitize_text_field( wp_unslash( $_POST['panasys_popup_width'] ) ) : '640px';
+		$width            = preg_match( '/^[0-9.]+(px|%)$/', $width ) ? $width : '640px';
+		$background_color = isset( $_POST['panasys_popup_background_color'] ) ? sanitize_hex_color( wp_unslash( $_POST['panasys_popup_background_color'] ) ) : '#ffffff';
+		$text_color       = isset( $_POST['panasys_popup_text_color'] ) ? sanitize_hex_color( wp_unslash( $_POST['panasys_popup_text_color'] ) ) : '#1e1e1e';
 
 		update_post_meta( $post_id, '_panasys_popup_width', $width );
+		update_post_meta( $post_id, '_panasys_popup_background_color', $background_color ? $background_color : '#ffffff' );
+		update_post_meta( $post_id, '_panasys_popup_text_color', $text_color ? $text_color : '#1e1e1e' );
 		update_post_meta( $post_id, '_panasys_popup_auto_open', isset( $_POST['panasys_popup_auto_open'] ) ? '1' : '0' );
 	}
 
@@ -315,15 +329,19 @@ class Panasys_Popups_Plugin {
 			return '';
 		}
 
-		$width     = get_post_meta( $post_id, '_panasys_popup_width', true );
-		$auto_open = get_post_meta( $post_id, '_panasys_popup_auto_open', true );
-		$width     = $width ? $width : '640px';
+		$width            = get_post_meta( $post_id, '_panasys_popup_width', true );
+		$auto_open        = get_post_meta( $post_id, '_panasys_popup_auto_open', true );
+		$background_color = get_post_meta( $post_id, '_panasys_popup_background_color', true );
+		$text_color       = get_post_meta( $post_id, '_panasys_popup_text_color', true );
+		$width            = $width ? $width : '640px';
+		$background_color = $background_color ? $background_color : '#ffffff';
+		$text_color       = $text_color ? $text_color : '#1e1e1e';
 
 		ob_start();
 		?>
 		<div class="panasys-popup" id="panasys-popup-<?php echo esc_attr( (string) $post_id ); ?>" data-auto-open="<?php echo esc_attr( '1' === $auto_open ? '1' : '0' ); ?>" data-hide-days="1" aria-hidden="true">
 			<div class="panasys-popup__overlay" data-panasys-close="1"></div>
-			<div class="panasys-popup__dialog" role="dialog" aria-modal="true" aria-labelledby="panasys-popup-title-<?php echo esc_attr( (string) $post_id ); ?>" style="--panasys-popup-max-width: <?php echo esc_attr( $width ); ?>;">
+			<div class="panasys-popup__dialog" role="dialog" aria-modal="true" aria-labelledby="panasys-popup-title-<?php echo esc_attr( (string) $post_id ); ?>" style="--panasys-popup-max-width: <?php echo esc_attr( $width ); ?>; --panasys-popup-background-color: <?php echo esc_attr( $background_color ); ?>; --panasys-popup-text-color: <?php echo esc_attr( $text_color ); ?>;">
 				<button class="panasys-popup__close" type="button" aria-label="<?php esc_attr_e( 'Close popup', 'panasys-popups' ); ?>" data-panasys-close="1">&times;</button>
 				<h2 class="panasys-popup__title" id="panasys-popup-title-<?php echo esc_attr( (string) $post_id ); ?>"><?php echo esc_html( get_the_title( $popup ) ); ?></h2>
 				<div class="panasys-popup__content">

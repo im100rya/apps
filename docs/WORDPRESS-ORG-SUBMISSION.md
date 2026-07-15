@@ -1,6 +1,6 @@
 # WordPress.org Submission Documentation
 
-This document lists the required and recommended steps to publish **Panasys Popups** on the WordPress.org Plugin Directory.
+This document lists the required and recommended steps to publish **Panasys Popups** on the WordPress.org Plugin Directory. Publisher details: WordPress.org username `im100rya`, author `Shaurya Srivastava`, company `Panasys Technologies`, website `https://panasys.in`.
 
 ## 1) Required package files
 
@@ -9,6 +9,7 @@ Include these files in your release zip:
 - `panasys-popups.php` (plugin header metadata)
 - `readme.txt` (WordPress.org format)
 - `LICENSE` (GPL-compatible license text)
+- `readme.txt` privacy/compliance disclosure for localStorage cooldown behavior
 - `uninstall.php` (cleanup logic)
 - `includes/`, `assets/` runtime files
 
@@ -16,7 +17,7 @@ Include these files in your release zip:
 
 Verify before release:
 
-- Plugin Name, Author, Author URI, Version are correct.
+- Plugin Name, WordPress.org contributor username, Author, Author URI, company, and Version are correct.
 - `Requires at least`, `Requires PHP`, and tested version are up to date.
 - Text domain and domain path are set.
 - License is GPL-compatible and declared in both plugin header and readme.
@@ -50,6 +51,7 @@ Run these checks before packaging:
 - Escape output and sanitize user input.
 - Verify nonces for settings/notice actions.
 - Avoid tracking/telemetry unless explicitly disclosed.
+- Disclose browser localStorage usage for the 1-day popup cooldown in the readme and privacy policy guidance.
 - Ensure no bundled premium code restrictions in the directory version.
 - Ensure donation links are informational and non-blocking.
 
@@ -63,4 +65,4 @@ Run these checks before packaging:
 
 - Track support threads and bug reports.
 - Update tested version after each new WordPress major release validation.
-- Keep changelog, stable tag, and release notes in sync.
+- Keep changelog, stable tag, release notes, and compliance documentation in sync.

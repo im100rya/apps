@@ -1,11 +1,11 @@
 === Panasys Popups ===
-Contributors: 100rya
+Contributors: im100rya
 Donate link: https://www.paypal.me/100rya
 Tags: popup, modal, shortcode, forms, images
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,7 +13,7 @@ Create accessible popups for shortcodes, forms, images, and rich content using r
 
 == Description ==
 
-Panasys Popups is a lightweight popup plugin that lets site owners create popup entries in wp-admin and display them anywhere through shortcodes.
+Panasys Popups is a lightweight popup plugin from Panasys Technologies that lets site owners create popup entries in wp-admin and display them anywhere through shortcodes.
 
 = Key Features =
 
@@ -22,10 +22,18 @@ Panasys Popups is a lightweight popup plugin that lets site owners create popup 
 * Frontend popup trigger shortcode with custom label and classes.
 * Popup list view shows shortcode snippets right next to popup names.
 * Admin editor also shows ready-to-copy shortcode snippets near popup title.
+* Adjustable modal width, background color, and text color for each popup.
 * 1-day suppression after closing a popup (prevents frequent repeats).
 * Optional popup auto-open behavior.
 * Accessible modal dialog semantics and ESC-to-close support.
 * Responsive modal dimensions designed to avoid full-screen takeover.
+
+= Author and Publisher =
+
+* WordPress.org username: im100rya
+* Author: Shaurya Srivastava
+* Company: Panasys Technologies
+* Website: https://panasys.in
 
 = Perfect For =
 
@@ -38,14 +46,16 @@ Panasys Popups is a lightweight popup plugin that lets site owners create popup 
 * Popups can contain shortcodes, forms, and images.
 * Closing a popup stores a browser-side cooldown for 1 day.
 * The plugin includes a small admin support/donation notice for administrators.
+* This plugin does not transmit popup visitor data to an external service.
 
 == Installation ==
 
 1. Upload the plugin folder to `/wp-content/plugins/panasys-popups`, or install via **Plugins > Add New**.
 2. Activate **Panasys Popups** from the Plugins page.
 3. Go to **Panasys Popups** in the dashboard and create your popup content.
-4. Insert `[panasys_popup id="123"]` on pages/posts/templates where popup markup should load.
-5. Insert `[panasys_popup_trigger id="123" label="Open Popup"]` where the trigger button should appear.
+4. Configure modal width, background color, text color, and auto-open behavior in **Popup Settings**.
+5. Insert `[panasys_popup id="123"]` on pages/posts/templates where popup markup should load.
+6. Insert `[panasys_popup_trigger id="123" label="Open Popup"]` where the trigger button should appear.
 
 == Frequently Asked Questions ==
 
@@ -57,6 +67,10 @@ Yes. Add the form shortcode to popup content and it will render inside the modal
 
 Yes. Use the editor to insert images/media blocks directly.
 
+= Can I adjust popup colors and width? =
+
+Yes. Each popup has settings for modal width, background color, and text color.
+
 = How does popup cooldown work? =
 
 When a visitor closes a popup, the plugin saves a browser-side cooldown value and prevents it from reopening for 1 day.
@@ -64,6 +78,16 @@ When a visitor closes a popup, the plugin saves a browser-side cooldown value an
 = Is this plugin Gutenberg compatible? =
 
 Yes. Popup content supports the block editor and REST API.
+
+= Does this plugin collect personal data? =
+
+No personal data is sent to the plugin author. A browser-side localStorage value is used only to remember that a visitor closed a popup for the 1-day cooldown.
+
+== Privacy and Compliance ==
+
+Panasys Popups stores popup cooldown information in the visitor browser using localStorage. The stored value is limited to a popup-specific hidden-until timestamp and is not transmitted to Panasys Technologies by this plugin.
+
+If you place third-party forms, analytics scripts, tracking pixels, or embedded media inside popup content, review those providers' privacy terms and update your site's privacy policy accordingly.
 
 == Shortcode Reference ==
 
@@ -85,6 +109,10 @@ Yes. Popup content supports the block editor and REST API.
 
 == Changelog ==
 
+= 1.2.0 =
+* Added per-popup settings for modal width, background color, and text color.
+* Updated author, publisher, privacy, and WordPress.org publication metadata.
+
 = 1.1.0 =
 * Added 1-day popup suppression after user closes a popup.
 * Added admin support/donation notice with dismiss option.
@@ -95,5 +123,5 @@ Yes. Popup content supports the block editor and REST API.
 
 == Upgrade Notice ==
 
-= 1.1.0 =
-Adds popup cooldown behavior and admin support notice.
+= 1.2.0 =
+Adds per-popup visual settings and updated WordPress.org publisher documentation.

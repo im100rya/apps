@@ -22,5 +22,7 @@ if ( is_array( $popup_ids ) ) {
 	foreach ( $popup_ids as $popup_id ) {
 		delete_post_meta( $popup_id, '_panasys_popup_width' );
 		delete_post_meta( $popup_id, '_panasys_popup_auto_open' );
+		delete_post_meta( $popup_id, '_panasys_popup_background_color' );
+		delete_post_meta( $popup_id, '_panasys_popup_text_color' );
 	}
 }

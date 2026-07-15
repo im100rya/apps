@@ -52,4 +52,28 @@ class ShortcodesTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'data-hide-days="1"', $output );
 	}
 
+	/**
+	 * Ensure popup shortcode includes visual style variables.
+	 */
+	public function test_popup_shortcode_includes_visual_style_variables() {
+		$post_id = self::factory()->post->create(
+			array(
+				'post_type'    => 'panasys_popup',
+				'post_status'  => 'publish',
+				'post_title'   => 'Styled popup',
+				'post_content' => 'Styled popup content',
+			)
+		);
+
+		update_post_meta( $post_id, '_panasys_popup_width', '720px' );
+		update_post_meta( $post_id, '_panasys_popup_background_color', '#123456' );
+		update_post_meta( $post_id, '_panasys_popup_text_color', '#abcdef' );
+
+		$output = do_shortcode( sprintf( '[panasys_popup id="%d"]', $post_id ) );
+
+		$this->assertStringContainsString( '--panasys-popup-max-width: 720px', $output );
+		$this->assertStringContainsString( '--panasys-popup-background-color: #123456', $output );
+		$this->assertStringContainsString( '--panasys-popup-text-color: #abcdef', $output );
+	}
+
 }
