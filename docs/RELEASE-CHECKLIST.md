@@ -12,7 +12,7 @@
 
 ## WordPress.org readiness
 - [ ] Confirm WordPress.org username `im100rya`, author `Shaurya Srivastava`, company `Panasys Technologies`, and URL `https://panasys.in` are correct.
-- [ ] Confirm donation link is valid.
+- [ ] Confirm PayPal `paypal.me/100rya` and UPI `im100rya@upi` donation details are valid.
 - [ ] Confirm license headers, privacy/localStorage disclosure, and `LICENSE` file are present.
 - [ ] Prepare assets (icons/banners/screenshots).
 

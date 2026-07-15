@@ -7,29 +7,61 @@
     return 'panasys_popup_hidden_until_' + popupId;
   }
 
-  function getHiddenUntil(popupId) {
+  function getStoredSuppression(popupId) {
     try {
-      var value = window.localStorage.getItem(getStorageKey(popupId));
-      return value ? parseInt(value, 10) : 0;
+      return window.localStorage.getItem(getStorageKey(popupId)) || '';
     } catch (e) {
-      return 0;
+      return '';
     }
   }
 
   function isSuppressed(popup) {
-    var hiddenUntil = getHiddenUntil(popup.id);
+    var storedSuppression = getStoredSuppression(popup.id);
+    var hiddenUntil = parseInt(storedSuppression, 10);
+
+    if (storedSuppression === 'never') {
+      return true;
+    }
+
     return hiddenUntil && hiddenUntil > Date.now();
   }
 
-  function suppressPopup(popup) {
-    var days = parseInt(popup.getAttribute('data-hide-days') || '1', 10);
-    if (!days || days < 1) {
-      days = 1;
+  function getSessionDays(frequency) {
+    if (frequency === 'one_week') {
+      return 7;
     }
 
-    var hiddenUntil = Date.now() + days * 24 * 60 * 60 * 1000;
+    if (frequency === 'one_day') {
+      return 1;
+    }
+
+    return 0;
+  }
+
+  function suppressPopup(popup) {
+    var frequency = popup.getAttribute('data-session-frequency') || 'one_day';
+    var days = getSessionDays(frequency);
+
     try {
-      window.localStorage.setItem(getStorageKey(popup.id), String(hiddenUntil));
+      if (frequency === 'every_load') {
+        window.localStorage.removeItem(getStorageKey(popup.id));
+        return;
+      }
+
+      if (frequency === 'never') {
+        window.localStorage.setItem(getStorageKey(popup.id), 'never');
+        return;
+      }
+
+      if (!days) {
+        days = parseInt(popup.getAttribute('data-hide-days') || '1', 10);
+      }
+
+      if (!days || days < 1) {
+        days = 1;
+      }
+
+      window.localStorage.setItem(getStorageKey(popup.id), String(Date.now() + days * 24 * 60 * 60 * 1000));
     } catch (e) {
       // Ignore storage errors.
     }

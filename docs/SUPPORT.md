@@ -4,6 +4,7 @@
 - Company: Panasys Technologies
 - Author: Shaurya Srivastava (`im100rya` on WordPress.org)
 - Donation link: https://www.paypal.me/100rya
+- UPI donation: im100rya@upi
 
 ## Getting help
 

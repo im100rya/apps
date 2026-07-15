@@ -5,7 +5,7 @@ Tags: popup, modal, shortcode, forms, images
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.3.0
+Stable tag: 1.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,9 +23,9 @@ Panasys Popups is a lightweight popup plugin from Panasys Technologies that lets
 * Popup list view shows shortcode snippets right next to popup names.
 * Admin editor also shows ready-to-copy shortcode snippets near popup title.
 * Adjustable modal width, background color, and text color for each popup.
-* Sidebar Settings page for default popup styling.
+* Sidebar Settings page for default popup styling, popup session frequency, and donation information.
 * Popup content supports text, images, YouTube videos, and supported social media embeds from links.
-* 1-day suppression after closing a popup (prevents frequent repeats).
+* Popup session frequency options: every page load, one day, one week, or never again in the same browser.
 * Optional popup auto-open behavior.
 * Accessible modal dialog semantics and ESC-to-close support.
 * Responsive modal dimensions designed to avoid full-screen takeover.
@@ -55,7 +55,7 @@ Panasys Popups is a lightweight popup plugin from Panasys Technologies that lets
 1. Upload the plugin folder to `/wp-content/plugins/panasys-popups`, or install via **Plugins > Add New**.
 2. Activate **Panasys Popups** from the Plugins page.
 3. Go to **Panasys Popups** in the dashboard and create your popup content.
-4. Configure default modal width, background color, and text color from **Panasys Popups > Settings** in the WordPress admin sidebar.
+4. Configure default modal width, background color, text color, popup session frequency, and donation details from **Panasys Popups > Settings** in the WordPress admin sidebar.
 5. Override modal width, background color, text color, and auto-open behavior in each popup **Popup Settings** panel.
 6. Insert `[panasys_popup id="123"]` on pages/posts/templates where popup markup should load.
 7. Insert `[panasys_popup_trigger id="123" label="Open Popup"]` where the trigger button should appear.
@@ -76,7 +76,7 @@ Yes. Use **Panasys Popups > Settings** for defaults and each popup's **Popup Set
 
 = How does popup cooldown work? =
 
-When a visitor closes a popup, the plugin saves a browser-side cooldown value and prevents it from reopening for 1 day.
+From **Panasys Popups > Settings**, choose whether popups can appear every page load, after one day, after one week, or never again in the same browser after closing.
 
 = Is this plugin Gutenberg compatible? =
 
@@ -85,6 +85,10 @@ Yes. Popup content supports the block editor and REST API.
 = Can I embed YouTube videos and social media posts? =
 
 Yes. Add supported media/social URLs on their own line in popup content or use embed blocks. WordPress oEmbed handles major providers such as YouTube and supported social platforms.
+
+= Where are the donation details? =
+
+The plugin settings page includes PayPal `paypal.me/100rya` and UPI `im100rya@upi` donation options for supporting the free plugin.
 
 = Does this plugin collect personal data? =
 
@@ -116,6 +120,11 @@ If you place third-party forms, analytics scripts, tracking pixels, or embedded 
 
 == Changelog ==
 
+= 1.4.0 =
+* Added popup session frequency setting: every page load, one day, one week, or never again in the same browser.
+* Added PayPal and UPI donation details to the plugin settings page.
+* Made the popup close button more explicit and accessible.
+
 = 1.3.0 =
 * Added sidebar Settings page for default modal width, background color, and text color.
 * Improved popup rendering for text, images, YouTube, and supported social media oEmbed links.
@@ -134,6 +143,9 @@ If you place third-party forms, analytics scripts, tracking pixels, or embedded 
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.4.0 =
+Adds configurable popup session frequency and donation details in plugin settings.
 
 = 1.3.0 =
 Adds sidebar styling defaults and improved embed support for rich popup content.

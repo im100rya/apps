@@ -50,6 +50,7 @@ class ShortcodesTest extends WP_UnitTestCase {
 
 		$output = do_shortcode( sprintf( '[panasys_popup id="%d"]', $post_id ) );
 		$this->assertStringContainsString( 'data-hide-days="1"', $output );
+		$this->assertStringContainsString( 'data-session-frequency="one_day"', $output );
 	}
 
 	/**

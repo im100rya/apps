@@ -110,6 +110,7 @@ class Panasys_Popups_Plugin {
 			'default_width'            => '640px',
 			'default_background_color' => '#ffffff',
 			'default_text_color'       => '#1e1e1e',
+			'session_frequency'        => 'one_day',
 		);
 	}
 
@@ -171,12 +172,18 @@ class Panasys_Popups_Plugin {
 		$width = preg_match( '/^[0-9.]+(px|%)$/', $width ) ? $width : $defaults['default_width'];
 
 		$background_color = isset( $settings['default_background_color'] ) ? sanitize_hex_color( wp_unslash( $settings['default_background_color'] ) ) : $defaults['default_background_color'];
-		$text_color       = isset( $settings['default_text_color'] ) ? sanitize_hex_color( wp_unslash( $settings['default_text_color'] ) ) : $defaults['default_text_color'];
+		$text_color        = isset( $settings['default_text_color'] ) ? sanitize_hex_color( wp_unslash( $settings['default_text_color'] ) ) : $defaults['default_text_color'];
+		$session_frequency = isset( $settings['session_frequency'] ) ? sanitize_key( wp_unslash( $settings['session_frequency'] ) ) : $defaults['session_frequency'];
+		$allowed_sessions  = array( 'every_load', 'one_day', 'one_week', 'never' );
+		if ( ! in_array( $session_frequency, $allowed_sessions, true ) ) {
+			$session_frequency = $defaults['session_frequency'];
+		}
 
 		return array(
 			'default_width'            => $width,
 			'default_background_color' => $background_color ? $background_color : $defaults['default_background_color'],
 			'default_text_color'       => $text_color ? $text_color : $defaults['default_text_color'],
+			'session_frequency'        => $session_frequency,
 		);
 	}
 
@@ -213,9 +220,26 @@ class Panasys_Popups_Plugin {
 						<th scope="row"><label for="panasys-popups-default-text-color"><?php esc_html_e( 'Default text color', 'panasys-popups' ); ?></label></th>
 						<td><input id="panasys-popups-default-text-color" name="panasys_popups_options[default_text_color]" type="color" value="<?php echo esc_attr( $settings['default_text_color'] ); ?>" /></td>
 					</tr>
+					<tr>
+						<th scope="row"><label for="panasys-popups-session-frequency"><?php esc_html_e( 'Popup session frequency', 'panasys-popups' ); ?></label></th>
+						<td>
+							<select id="panasys-popups-session-frequency" name="panasys_popups_options[session_frequency]">
+								<option value="every_load" <?php selected( $settings['session_frequency'], 'every_load' ); ?>><?php esc_html_e( 'Every time a page loads', 'panasys-popups' ); ?></option>
+								<option value="one_day" <?php selected( $settings['session_frequency'], 'one_day' ); ?>><?php esc_html_e( 'After closing, hide for one day', 'panasys-popups' ); ?></option>
+								<option value="one_week" <?php selected( $settings['session_frequency'], 'one_week' ); ?>><?php esc_html_e( 'After closing, hide for one week', 'panasys-popups' ); ?></option>
+								<option value="never" <?php selected( $settings['session_frequency'], 'never' ); ?>><?php esc_html_e( 'After closing, never show again in this browser', 'panasys-popups' ); ?></option>
+							</select>
+							<p class="description"><?php esc_html_e( 'Controls how often popups can reappear after visitors close them.', 'panasys-popups' ); ?></p>
+						</td>
+					</tr>
 				</table>
 				<?php submit_button(); ?>
 			</form>
+			<hr />
+			<h2><?php esc_html_e( 'Support this free plugin', 'panasys-popups' ); ?></h2>
+			<p><?php esc_html_e( 'If Panasys Popups helps your website, you can support future development with a donation.', 'panasys-popups' ); ?></p>
+			<p><strong><?php esc_html_e( 'PayPal:', 'panasys-popups' ); ?></strong> <a href="<?php echo esc_url( 'https://paypal.me/100rya' ); ?>" target="_blank" rel="noopener noreferrer">paypal.me/100rya</a></p>
+			<p><strong><?php esc_html_e( 'UPI:', 'panasys-popups' ); ?></strong> <code>im100rya@upi</code></p>
 		</div>
 		<?php
 	}
@@ -360,7 +384,7 @@ class Panasys_Popups_Plugin {
 		$width            = get_post_meta( $post->ID, '_panasys_popup_width', true );
 		$auto_open        = get_post_meta( $post->ID, '_panasys_popup_auto_open', true );
 		$background_color = get_post_meta( $post->ID, '_panasys_popup_background_color', true );
-		$text_color       = get_post_meta( $post->ID, '_panasys_popup_text_color', true );
+		$text_color        = get_post_meta( $post->ID, '_panasys_popup_text_color', true );
 
 		wp_nonce_field( 'panasys_popup_settings', 'panasys_popup_settings_nonce' );
 		?>
@@ -411,7 +435,7 @@ class Panasys_Popups_Plugin {
 		$width            = isset( $_POST['panasys_popup_width'] ) ? sanitize_text_field( wp_unslash( $_POST['panasys_popup_width'] ) ) : '640px';
 		$width            = preg_match( '/^[0-9.]+(px|%)$/', $width ) ? $width : '640px';
 		$background_color = isset( $_POST['panasys_popup_background_color'] ) ? sanitize_hex_color( wp_unslash( $_POST['panasys_popup_background_color'] ) ) : '#ffffff';
-		$text_color       = isset( $_POST['panasys_popup_text_color'] ) ? sanitize_hex_color( wp_unslash( $_POST['panasys_popup_text_color'] ) ) : '#1e1e1e';
+		$text_color        = isset( $_POST['panasys_popup_text_color'] ) ? sanitize_hex_color( wp_unslash( $_POST['panasys_popup_text_color'] ) ) : '#1e1e1e';
 
 		update_post_meta( $post_id, '_panasys_popup_width', $width );
 		update_post_meta( $post_id, '_panasys_popup_background_color', $background_color ? $background_color : '#ffffff' );
@@ -455,17 +479,18 @@ class Panasys_Popups_Plugin {
 		$width            = get_post_meta( $post_id, '_panasys_popup_width', true );
 		$auto_open        = get_post_meta( $post_id, '_panasys_popup_auto_open', true );
 		$background_color = get_post_meta( $post_id, '_panasys_popup_background_color', true );
-		$text_color       = get_post_meta( $post_id, '_panasys_popup_text_color', true );
+		$text_color        = get_post_meta( $post_id, '_panasys_popup_text_color', true );
 		$width            = $width ? $width : $settings['default_width'];
 		$background_color = $background_color ? $background_color : $settings['default_background_color'];
-		$text_color       = $text_color ? $text_color : $settings['default_text_color'];
+		$text_color        = $text_color ? $text_color : $settings['default_text_color'];
+		$session_frequency = $settings['session_frequency'];
 
 		ob_start();
 		?>
-		<div class="panasys-popup" id="panasys-popup-<?php echo esc_attr( (string) $post_id ); ?>" data-auto-open="<?php echo esc_attr( '1' === $auto_open ? '1' : '0' ); ?>" data-hide-days="1" aria-hidden="true">
+		<div class="panasys-popup" id="panasys-popup-<?php echo esc_attr( (string) $post_id ); ?>" data-auto-open="<?php echo esc_attr( '1' === $auto_open ? '1' : '0' ); ?>" data-hide-days="1" data-session-frequency="<?php echo esc_attr( $session_frequency ); ?>" aria-hidden="true">
 			<div class="panasys-popup__overlay" data-panasys-close="1"></div>
 			<div class="panasys-popup__dialog" role="dialog" aria-modal="true" aria-labelledby="panasys-popup-title-<?php echo esc_attr( (string) $post_id ); ?>" style="--panasys-popup-max-width: <?php echo esc_attr( $width ); ?>; --panasys-popup-background-color: <?php echo esc_attr( $background_color ); ?>; --panasys-popup-text-color: <?php echo esc_attr( $text_color ); ?>;">
-				<button class="panasys-popup__close" type="button" aria-label="<?php esc_attr_e( 'Close popup', 'panasys-popups' ); ?>" data-panasys-close="1">&times;</button>
+				<button class="panasys-popup__close" type="button" aria-label="<?php esc_attr_e( 'Close popup', 'panasys-popups' ); ?>" data-panasys-close="1"><span aria-hidden="true">&times;</span><span class="panasys-popup__close-text"><?php esc_html_e( 'Close', 'panasys-popups' ); ?></span></button>
 				<h2 class="panasys-popup__title" id="panasys-popup-title-<?php echo esc_attr( (string) $post_id ); ?>"><?php echo esc_html( get_the_title( $popup ) ); ?></h2>
 				<div class="panasys-popup__content">
 					<?php echo $this->render_popup_content( $popup->post_content ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
