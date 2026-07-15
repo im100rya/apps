@@ -1,0 +1,80 @@
+.panasys-popup {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.panasys-popup.is-open {
+  display: flex;
+}
+
+.panasys-popup__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.panasys-popup__dialog {
+  position: relative;
+  width: min(90vw, var(--panasys-popup-max-width, 640px));
+  max-height: min(85vh, 760px);
+  overflow-y: auto;
+  background: var(--panasys-popup-background-color, #fff);
+  color: var(--panasys-popup-text-color, #1e1e1e);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.24);
+  padding: 1.25rem;
+}
+
+.panasys-popup__close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  font-size: 2rem;
+  line-height: 1;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.panasys-popup__title {
+  margin: 0 2rem 1rem 0;
+  font-size: 1.35rem;
+}
+
+.panasys-popup__content img {
+  max-width: 100%;
+  height: auto;
+}
+
+.panasys-popup-trigger {
+  cursor: pointer;
+}
+
+@media (max-width: 782px) {
+  .panasys-popup {
+    padding: 1rem;
+  }
+
+  .panasys-popup__dialog {
+    width: min(94vw, var(--panasys-popup-max-width, 640px));
+    max-height: 82vh;
+  }
+}
+
+.panasys-popup__content iframe,
+.panasys-popup__content embed,
+.panasys-popup__content object,
+.panasys-popup__content video {
+  max-width: 100%;
+}
+
+.panasys-popup__content iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
