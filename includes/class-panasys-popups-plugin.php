@@ -49,6 +49,8 @@ class Panasys_Popups_Plugin {
 		add_action( 'edit_form_after_title', array( $this, 'render_shortcode_reference_near_title' ) );
 		add_filter( 'manage_edit-panasys_popup_columns', array( $this, 'add_shortcode_column' ) );
 		add_action( 'manage_panasys_popup_posts_custom_column', array( $this, 'render_shortcode_column' ), 10, 2 );
+		add_action( 'admin_menu', array( $this, 'register_settings_page' ) );
+		add_action( 'admin_init', array( $this, 'register_plugin_settings' ) );
 	}
 
 	/**
@@ -98,6 +100,125 @@ class Panasys_Popups_Plugin {
 	}
 
 
+	/**
+	 * Get default plugin settings.
+	 *
+	 * @return array<string,string>
+	 */
+	private function get_default_settings() {
+		return array(
+			'default_width'            => '640px',
+			'default_background_color' => '#ffffff',
+			'default_text_color'       => '#1e1e1e',
+		);
+	}
+
+	/**
+	 * Get saved plugin settings with defaults.
+	 *
+	 * @return array<string,string>
+	 */
+	private function get_plugin_settings() {
+		$options = get_option( 'panasys_popups_options', array() );
+		$options = is_array( $options ) ? $options : array();
+
+		return wp_parse_args( $options, $this->get_default_settings() );
+	}
+
+	/**
+	 * Register the settings submenu in the plugin sidebar menu.
+	 *
+	 * @return void
+	 */
+	public function register_settings_page() {
+		add_submenu_page(
+			'edit.php?post_type=panasys_popup',
+			__( 'Panasys Popups Settings', 'panasys-popups' ),
+			__( 'Settings', 'panasys-popups' ),
+			'manage_options',
+			'panasys-popups-settings',
+			array( $this, 'render_settings_page' )
+		);
+	}
+
+	/**
+	 * Register plugin settings.
+	 *
+	 * @return void
+	 */
+	public function register_plugin_settings() {
+		register_setting(
+			'panasys_popups_settings',
+			'panasys_popups_options',
+			array(
+				'sanitize_callback' => array( $this, 'sanitize_plugin_settings' ),
+				'default'           => $this->get_default_settings(),
+			)
+		);
+	}
+
+	/**
+	 * Sanitize plugin settings.
+	 *
+	 * @param array<string,mixed> $settings Raw settings.
+	 * @return array<string,string>
+	 */
+	public function sanitize_plugin_settings( $settings ) {
+		$defaults = $this->get_default_settings();
+		$settings = is_array( $settings ) ? $settings : array();
+
+		$width = isset( $settings['default_width'] ) ? sanitize_text_field( wp_unslash( $settings['default_width'] ) ) : $defaults['default_width'];
+		$width = preg_match( '/^[0-9.]+(px|%)$/', $width ) ? $width : $defaults['default_width'];
+
+		$background_color = isset( $settings['default_background_color'] ) ? sanitize_hex_color( wp_unslash( $settings['default_background_color'] ) ) : $defaults['default_background_color'];
+		$text_color       = isset( $settings['default_text_color'] ) ? sanitize_hex_color( wp_unslash( $settings['default_text_color'] ) ) : $defaults['default_text_color'];
+
+		return array(
+			'default_width'            => $width,
+			'default_background_color' => $background_color ? $background_color : $defaults['default_background_color'],
+			'default_text_color'       => $text_color ? $text_color : $defaults['default_text_color'],
+		);
+	}
+
+	/**
+	 * Render plugin settings page.
+	 *
+	 * @return void
+	 */
+	public function render_settings_page() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$settings = $this->get_plugin_settings();
+		?>
+		<div class="wrap">
+			<h1><?php esc_html_e( 'Panasys Popups Settings', 'panasys-popups' ); ?></h1>
+			<p><?php esc_html_e( 'Set default styling for new and unconfigured popups. Individual popup settings can override these values.', 'panasys-popups' ); ?></p>
+			<form action="options.php" method="post">
+				<?php settings_fields( 'panasys_popups_settings' ); ?>
+				<table class="form-table" role="presentation">
+					<tr>
+						<th scope="row"><label for="panasys-popups-default-width"><?php esc_html_e( 'Default modal width', 'panasys-popups' ); ?></label></th>
+						<td>
+							<input id="panasys-popups-default-width" name="panasys_popups_options[default_width]" type="text" class="regular-text" value="<?php echo esc_attr( $settings['default_width'] ); ?>" />
+							<p class="description"><?php esc_html_e( 'Use a pixel or percentage value, for example 640px or 80%.', 'panasys-popups' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="panasys-popups-default-background-color"><?php esc_html_e( 'Default background color', 'panasys-popups' ); ?></label></th>
+						<td><input id="panasys-popups-default-background-color" name="panasys_popups_options[default_background_color]" type="color" value="<?php echo esc_attr( $settings['default_background_color'] ); ?>" /></td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="panasys-popups-default-text-color"><?php esc_html_e( 'Default text color', 'panasys-popups' ); ?></label></th>
+						<td><input id="panasys-popups-default-text-color" name="panasys_popups_options[default_text_color]" type="color" value="<?php echo esc_attr( $settings['default_text_color'] ); ?>" /></td>
+					</tr>
+				</table>
+				<?php submit_button(); ?>
+			</form>
+		</div>
+		<?php
+	}
 
 
 	/**
@@ -235,6 +356,7 @@ class Panasys_Popups_Plugin {
 	 * @return void
 	 */
 	public function render_popup_settings_meta_box( $post ) {
+		$settings         = $this->get_plugin_settings();
 		$width            = get_post_meta( $post->ID, '_panasys_popup_width', true );
 		$auto_open        = get_post_meta( $post->ID, '_panasys_popup_auto_open', true );
 		$background_color = get_post_meta( $post->ID, '_panasys_popup_background_color', true );
@@ -244,15 +366,15 @@ class Panasys_Popups_Plugin {
 		?>
 		<p>
 			<label for="panasys-popup-width"><strong><?php esc_html_e( 'Modal width (px or %)', 'panasys-popups' ); ?></strong></label>
-			<input id="panasys-popup-width" name="panasys_popup_width" type="text" class="widefat" value="<?php echo esc_attr( $width ? $width : '640px' ); ?>" />
+			<input id="panasys-popup-width" name="panasys_popup_width" type="text" class="widefat" value="<?php echo esc_attr( $width ? $width : $settings['default_width'] ); ?>" />
 		</p>
 		<p>
 			<label for="panasys-popup-background-color"><strong><?php esc_html_e( 'Modal background color', 'panasys-popups' ); ?></strong></label>
-			<input id="panasys-popup-background-color" name="panasys_popup_background_color" type="color" value="<?php echo esc_attr( $background_color ? $background_color : '#ffffff' ); ?>" />
+			<input id="panasys-popup-background-color" name="panasys_popup_background_color" type="color" value="<?php echo esc_attr( $background_color ? $background_color : $settings['default_background_color'] ); ?>" />
 		</p>
 		<p>
 			<label for="panasys-popup-text-color"><strong><?php esc_html_e( 'Modal text color', 'panasys-popups' ); ?></strong></label>
-			<input id="panasys-popup-text-color" name="panasys_popup_text_color" type="color" value="<?php echo esc_attr( $text_color ? $text_color : '#1e1e1e' ); ?>" />
+			<input id="panasys-popup-text-color" name="panasys_popup_text_color" type="color" value="<?php echo esc_attr( $text_color ? $text_color : $settings['default_text_color'] ); ?>" />
 		</p>
 		<p>
 			<label for="panasys-popup-auto-open">
@@ -329,13 +451,14 @@ class Panasys_Popups_Plugin {
 			return '';
 		}
 
+		$settings         = $this->get_plugin_settings();
 		$width            = get_post_meta( $post_id, '_panasys_popup_width', true );
 		$auto_open        = get_post_meta( $post_id, '_panasys_popup_auto_open', true );
 		$background_color = get_post_meta( $post_id, '_panasys_popup_background_color', true );
 		$text_color       = get_post_meta( $post_id, '_panasys_popup_text_color', true );
-		$width            = $width ? $width : '640px';
-		$background_color = $background_color ? $background_color : '#ffffff';
-		$text_color       = $text_color ? $text_color : '#1e1e1e';
+		$width            = $width ? $width : $settings['default_width'];
+		$background_color = $background_color ? $background_color : $settings['default_background_color'];
+		$text_color       = $text_color ? $text_color : $settings['default_text_color'];
 
 		ob_start();
 		?>
@@ -345,12 +468,88 @@ class Panasys_Popups_Plugin {
 				<button class="panasys-popup__close" type="button" aria-label="<?php esc_attr_e( 'Close popup', 'panasys-popups' ); ?>" data-panasys-close="1">&times;</button>
 				<h2 class="panasys-popup__title" id="panasys-popup-title-<?php echo esc_attr( (string) $post_id ); ?>"><?php echo esc_html( get_the_title( $popup ) ); ?></h2>
 				<div class="panasys-popup__content">
-					<?php echo wp_kses_post( do_shortcode( apply_filters( 'the_content', $popup->post_content ) ) ); ?>
+					<?php echo $this->render_popup_content( $popup->post_content ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</div>
 			</div>
 		</div>
 		<?php
 		return (string) ob_get_clean();
+	}
+
+
+	/**
+	 * Render popup content with shortcode and oEmbed support.
+	 *
+	 * @param string $content Popup post content.
+	 * @return string
+	 */
+	private function render_popup_content( $content ) {
+		$content = $this->convert_standalone_image_links( $content );
+		$content = apply_filters( 'the_content', $content );
+		$content = do_shortcode( $content );
+
+		return wp_kses( $content, $this->get_allowed_popup_html() );
+	}
+
+
+	/**
+	 * Convert standalone image URLs into image markup before content filters run.
+	 *
+	 * @param string $content Popup post content.
+	 * @return string
+	 */
+	private function convert_standalone_image_links( $content ) {
+		$lines = preg_split( '/\r\n|\r|\n/', $content );
+		if ( ! is_array( $lines ) ) {
+			return $content;
+		}
+
+		foreach ( $lines as $index => $line ) {
+			$trimmed = trim( $line );
+			if ( preg_match( '#^https?://[^\s]+\.(?:jpg|jpeg|png|gif|webp|svg)(?:\?[^\s]*)?$#i', $trimmed ) ) {
+				$lines[ $index ] = '<img src="' . esc_url( $trimmed ) . '" alt="" loading="lazy" />';
+			}
+		}
+
+		return implode( "\n", $lines );
+	}
+
+	/**
+	 * Get HTML allowlist for popup content, including safe oEmbed iframe output.
+	 *
+	 * @return array<string,array<string,bool|array<string,bool>>>
+	 */
+	private function get_allowed_popup_html() {
+		$allowed = wp_kses_allowed_html( 'post' );
+
+		$allowed['iframe'] = array(
+			'src'             => true,
+			'title'           => true,
+			'width'           => true,
+			'height'          => true,
+			'frameborder'     => true,
+			'allow'           => true,
+			'allowfullscreen' => true,
+			'loading'         => true,
+			'referrerpolicy'  => true,
+			'class'           => true,
+			'id'              => true,
+			'style'           => true,
+		);
+
+		$allowed['blockquote'] = array(
+			'class'     => true,
+			'cite'      => true,
+			'data-*'    => true,
+			'lang'      => true,
+			'dir'       => true,
+			'style'     => true,
+		);
+
+		$allowed['div']['data-*'] = true;
+		$allowed['span']['data-*'] = true;
+
+		return $allowed;
 	}
 
 	/**
@@ -419,5 +618,6 @@ class Panasys_Popups_Plugin {
 
 		wp_enqueue_style( 'panasys-popups' );
 		wp_enqueue_script( 'panasys-popups' );
+		wp_enqueue_script( 'wp-embed' );
 	}
 }

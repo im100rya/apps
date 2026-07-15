@@ -17,6 +17,6 @@
 - [ ] Prepare assets (icons/banners/screenshots).
 
 ## Distribution
-- [ ] Build release zip excluding development files (`.distignore`).
+- [ ] Build release zip excluding development files (`.distignore`) with top-level folder name `panasys popups`.
 - [ ] Publish/update tag.
 - [ ] Deploy to WordPress.org SVN trunk/tag.

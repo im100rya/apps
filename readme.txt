@@ -5,7 +5,7 @@ Tags: popup, modal, shortcode, forms, images
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,6 +23,8 @@ Panasys Popups is a lightweight popup plugin from Panasys Technologies that lets
 * Popup list view shows shortcode snippets right next to popup names.
 * Admin editor also shows ready-to-copy shortcode snippets near popup title.
 * Adjustable modal width, background color, and text color for each popup.
+* Sidebar Settings page for default popup styling.
+* Popup content supports text, images, YouTube videos, and supported social media embeds from links.
 * 1-day suppression after closing a popup (prevents frequent repeats).
 * Optional popup auto-open behavior.
 * Accessible modal dialog semantics and ESC-to-close support.
@@ -53,9 +55,10 @@ Panasys Popups is a lightweight popup plugin from Panasys Technologies that lets
 1. Upload the plugin folder to `/wp-content/plugins/panasys-popups`, or install via **Plugins > Add New**.
 2. Activate **Panasys Popups** from the Plugins page.
 3. Go to **Panasys Popups** in the dashboard and create your popup content.
-4. Configure modal width, background color, text color, and auto-open behavior in **Popup Settings**.
-5. Insert `[panasys_popup id="123"]` on pages/posts/templates where popup markup should load.
-6. Insert `[panasys_popup_trigger id="123" label="Open Popup"]` where the trigger button should appear.
+4. Configure default modal width, background color, and text color from **Panasys Popups > Settings** in the WordPress admin sidebar.
+5. Override modal width, background color, text color, and auto-open behavior in each popup **Popup Settings** panel.
+6. Insert `[panasys_popup id="123"]` on pages/posts/templates where popup markup should load.
+7. Insert `[panasys_popup_trigger id="123" label="Open Popup"]` where the trigger button should appear.
 
 == Frequently Asked Questions ==
 
@@ -69,7 +72,7 @@ Yes. Use the editor to insert images/media blocks directly.
 
 = Can I adjust popup colors and width? =
 
-Yes. Each popup has settings for modal width, background color, and text color.
+Yes. Use **Panasys Popups > Settings** for defaults and each popup's **Popup Settings** panel for overrides.
 
 = How does popup cooldown work? =
 
@@ -78,6 +81,10 @@ When a visitor closes a popup, the plugin saves a browser-side cooldown value an
 = Is this plugin Gutenberg compatible? =
 
 Yes. Popup content supports the block editor and REST API.
+
+= Can I embed YouTube videos and social media posts? =
+
+Yes. Add supported media/social URLs on their own line in popup content or use embed blocks. WordPress oEmbed handles major providers such as YouTube and supported social platforms.
 
 = Does this plugin collect personal data? =
 
@@ -109,6 +116,11 @@ If you place third-party forms, analytics scripts, tracking pixels, or embedded 
 
 == Changelog ==
 
+= 1.3.0 =
+* Added sidebar Settings page for default modal width, background color, and text color.
+* Improved popup rendering for text, images, YouTube, and supported social media oEmbed links.
+* Documented release packaging folder name as `panasys popups`.
+
 = 1.2.0 =
 * Added per-popup settings for modal width, background color, and text color.
 * Updated author, publisher, privacy, and WordPress.org publication metadata.
@@ -122,6 +134,9 @@ If you place third-party forms, analytics scripts, tracking pixels, or embedded 
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.3.0 =
+Adds sidebar styling defaults and improved embed support for rich popup content.
 
 = 1.2.0 =
 Adds per-popup visual settings and updated WordPress.org publisher documentation.

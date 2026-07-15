@@ -4,7 +4,7 @@ This document lists the required and recommended steps to publish **Panasys Popu
 
 ## 1) Required package files
 
-Include these files in your release zip:
+Include these files in your release zip. The requested top-level release folder name is `panasys popups`:
 
 - `panasys-popups.php` (plugin header metadata)
 - `readme.txt` (WordPress.org format)
@@ -58,6 +58,7 @@ Run these checks before packaging:
 ## 6) Packaging checklist
 
 - Exclude development-only files from zip (see `.distignore`).
+- Build the release archive with the top-level plugin folder named `panasys popups`.
 - Ensure no secrets or local environment files are included.
 - Tag release and keep readme changelog aligned with plugin version.
 

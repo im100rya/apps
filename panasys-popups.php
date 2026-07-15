@@ -3,7 +3,7 @@
  * Plugin Name: Panasys Popups
  * Plugin URI: https://panasys.in/wordpress-plugins/
  * Description: Build accessible pop-ups for shortcodes, forms, images, and any editor content.
- * Version: 1.2.0
+ * Version: 1.3.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Shaurya Srivastava, Panasys Technologies
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'PANASYS_POPUPS_VERSION', '1.2.0' );
+define( 'PANASYS_POPUPS_VERSION', '1.3.0' );
 define( 'PANASYS_POPUPS_FILE', __FILE__ );
 define( 'PANASYS_POPUPS_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PANASYS_POPUPS_URL', plugin_dir_url( __FILE__ ) );

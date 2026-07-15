@@ -66,3 +66,15 @@
     max-height: 82vh;
   }
 }
+
+.panasys-popup__content iframe,
+.panasys-popup__content embed,
+.panasys-popup__content object,
+.panasys-popup__content video {
+  max-width: 100%;
+}
+
+.panasys-popup__content iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
