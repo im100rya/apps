@@ -44,6 +44,7 @@ class Ticket_Booking_Reviews_Plugin {
 		add_action( 'save_post_tbr_event', array( $this, 'save_event_meta' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_shortcode( 'ticket_booking_event', array( $this, 'render_event_shortcode' ) );
+		add_shortcode( 'ticket_booking_events', array( $this, 'render_events_list_shortcode' ) );
 		add_filter( 'woocommerce_add_cart_item_data', array( $this, 'add_cart_item_data' ), 10, 3 );
 		add_filter( 'woocommerce_get_item_data', array( $this, 'display_cart_item_data' ), 10, 2 );
 		add_action( 'woocommerce_checkout_create_order_line_item', array( $this, 'add_order_line_item_meta' ), 10, 4 );
@@ -87,7 +88,7 @@ class Ticket_Booking_Reviews_Plugin {
 	/** Register event metaboxes. */
 	public function register_meta_boxes() {
 		add_meta_box( 'tbr_event_details', __( 'Ticket Booking Details', 'ticket-booking-reviews' ), array( $this, 'render_event_details_metabox' ), 'tbr_event', 'normal', 'high' );
-		add_meta_box( 'tbr_seat_structure', __( 'Seat Structure', 'ticket-booking-reviews' ), array( $this, 'render_seat_structure_metabox' ), 'tbr_event', 'normal', 'default' );
+		add_meta_box( 'tbr_seat_structure', __( 'Seat Structure & Venue Layout', 'ticket-booking-reviews' ), array( $this, 'render_seat_structure_metabox' ), 'tbr_event', 'normal', 'default' );
 		add_meta_box( 'tbr_shortcode', __( 'Booking Shortcode', 'ticket-booking-reviews' ), array( $this, 'render_shortcode_metabox' ), 'tbr_event', 'side', 'default' );
 	}
 
@@ -129,13 +130,27 @@ class Ticket_Booking_Reviews_Plugin {
 	public function render_seat_structure_metabox( $post ) {
 		$rows     = max( 1, absint( get_post_meta( $post->ID, '_tbr_seat_rows', true ) ) );
 		$cols     = max( 1, absint( get_post_meta( $post->ID, '_tbr_seat_columns', true ) ) );
-		$sections = get_post_meta( $post->ID, '_tbr_seat_sections', true );
-		$blocked  = get_post_meta( $post->ID, '_tbr_blocked_seats', true );
+		$sections        = get_post_meta( $post->ID, '_tbr_seat_sections', true );
+		$tiers           = get_post_meta( $post->ID, '_tbr_seat_tiers', true );
+		$position_notes  = get_post_meta( $post->ID, '_tbr_seat_position_notes', true );
+		$screen_position = get_post_meta( $post->ID, '_tbr_screen_position', true );
+		$pavilion_ends   = get_post_meta( $post->ID, '_tbr_pavilion_ends', true );
+		$blocked         = get_post_meta( $post->ID, '_tbr_blocked_seats', true );
 		?>
-		<p><?php esc_html_e( 'Define a reusable grid for reserved seating. Use sections for areas such as Balcony, Premium, Pavilion, Stand A, VIP, or General Admission.', 'ticket-booking-reviews' ); ?></p>
+		<p><?php esc_html_e( 'Define a reusable venue map for reserved seating. Use rows/columns for the physical seat grid, then map rows into tiers and named sections.', 'ticket-booking-reviews' ); ?></p>
 		<p><label><?php esc_html_e( 'Rows', 'ticket-booking-reviews' ); ?> <input name="tbr_seat_rows" type="number" min="1" max="100" value="<?php echo esc_attr( $rows ); ?>" /></label> <label><?php esc_html_e( 'Seats per row', 'ticket-booking-reviews' ); ?> <input name="tbr_seat_columns" type="number" min="1" max="200" value="<?php echo esc_attr( $cols ); ?>" /></label></p>
-		<p><label for="tbr-seat-sections"><strong><?php esc_html_e( 'Seat sections', 'ticket-booking-reviews' ); ?></strong></label></p>
-		<textarea id="tbr-seat-sections" name="tbr_seat_sections" rows="4" class="widefat" placeholder="Premium: A-C\nStandard: D-H"><?php echo esc_textarea( $sections ); ?></textarea>
+		<p><label for="tbr-seat-sections"><strong><?php esc_html_e( 'Seat sections / stands', 'ticket-booking-reviews' ); ?></strong></label></p>
+		<textarea id="tbr-seat-sections" name="tbr_seat_sections" rows="4" class="widefat" placeholder="North Stand: A-C\nPavilion: D-F\nVIP: G-H"><?php echo esc_textarea( $sections ); ?></textarea>
+		<p class="description"><?php esc_html_e( 'One section per line, format: Section name: row range. Examples: Balcony: A-C, Pavilion: D-F.', 'ticket-booking-reviews' ); ?></p>
+		<p><label for="tbr-seat-tiers"><strong><?php esc_html_e( 'Tier-wise seats and pricing labels', 'ticket-booking-reviews' ); ?></strong></label></p>
+		<textarea id="tbr-seat-tiers" name="tbr_seat_tiers" rows="4" class="widefat" placeholder="Platinum: A-B | 2500\nGold: C-E | 1500\nSilver: F-H | 750"><?php echo esc_textarea( $tiers ); ?></textarea>
+		<p class="description"><?php esc_html_e( 'One tier per line, format: Tier name: row range | optional price/label. WooCommerce still controls final checkout price.', 'ticket-booking-reviews' ); ?></p>
+		<p><label for="tbr-seat-position-notes"><strong><?php esc_html_e( 'Seat position notes', 'ticket-booking-reviews' ); ?></strong></label></p>
+		<textarea id="tbr-seat-position-notes" name="tbr_seat_position_notes" rows="3" class="widefat" placeholder="A1-A10: Left aisle\nA11-A20: Center\nA21-A30: Right aisle"><?php echo esc_textarea( $position_notes ); ?></textarea>
+		<p><label for="tbr-screen-position"><strong><?php esc_html_e( 'Movie theater screen position', 'ticket-booking-reviews' ); ?></strong></label></p>
+		<select id="tbr-screen-position" name="tbr_screen_position"><option value="front" <?php selected( $screen_position, 'front' ); ?>><?php esc_html_e( 'Front / Top of map', 'ticket-booking-reviews' ); ?></option><option value="back" <?php selected( $screen_position, 'back' ); ?>><?php esc_html_e( 'Back / Bottom of map', 'ticket-booking-reviews' ); ?></option></select>
+		<p><label for="tbr-pavilion-ends"><strong><?php esc_html_e( 'Cricket pavilion ends', 'ticket-booking-reviews' ); ?></strong></label></p>
+		<input id="tbr-pavilion-ends" name="tbr_pavilion_ends" type="text" class="widefat" value="<?php echo esc_attr( $pavilion_ends ); ?>" placeholder="Pavilion End, City End" />
 		<p><label for="tbr-blocked-seats"><strong><?php esc_html_e( 'Blocked/unavailable seats', 'ticket-booking-reviews' ); ?></strong></label></p>
 		<input id="tbr-blocked-seats" name="tbr_blocked_seats" type="text" class="widefat" value="<?php echo esc_attr( $blocked ); ?>" placeholder="A1,A2,B10" />
 		<?php
@@ -164,6 +179,10 @@ class Ticket_Booking_Reviews_Plugin {
 		update_post_meta( $post_id, '_tbr_seat_rows', isset( $_POST['tbr_seat_rows'] ) ? min( 100, max( 1, absint( $_POST['tbr_seat_rows'] ) ) ) : 1 );
 		update_post_meta( $post_id, '_tbr_seat_columns', isset( $_POST['tbr_seat_columns'] ) ? min( 200, max( 1, absint( $_POST['tbr_seat_columns'] ) ) ) : 1 );
 		update_post_meta( $post_id, '_tbr_seat_sections', isset( $_POST['tbr_seat_sections'] ) ? sanitize_textarea_field( wp_unslash( $_POST['tbr_seat_sections'] ) ) : '' );
+		update_post_meta( $post_id, '_tbr_seat_tiers', isset( $_POST['tbr_seat_tiers'] ) ? sanitize_textarea_field( wp_unslash( $_POST['tbr_seat_tiers'] ) ) : '' );
+		update_post_meta( $post_id, '_tbr_seat_position_notes', isset( $_POST['tbr_seat_position_notes'] ) ? sanitize_textarea_field( wp_unslash( $_POST['tbr_seat_position_notes'] ) ) : '' );
+		update_post_meta( $post_id, '_tbr_screen_position', isset( $_POST['tbr_screen_position'] ) && 'back' === sanitize_key( wp_unslash( $_POST['tbr_screen_position'] ) ) ? 'back' : 'front' );
+		update_post_meta( $post_id, '_tbr_pavilion_ends', isset( $_POST['tbr_pavilion_ends'] ) ? sanitize_text_field( wp_unslash( $_POST['tbr_pavilion_ends'] ) ) : '' );
 		update_post_meta( $post_id, '_tbr_blocked_seats', isset( $_POST['tbr_blocked_seats'] ) ? sanitize_text_field( wp_unslash( $_POST['tbr_blocked_seats'] ) ) : '' );
 	}
 
@@ -184,6 +203,102 @@ class Ticket_Booking_Reviews_Plugin {
 		return $label;
 	}
 
+	/**
+	 * Convert spreadsheet-style row letters back to a number for row-range checks.
+	 *
+	 * @param string $label Row label.
+	 * @return int
+	 */
+	private function get_row_number( $label ) {
+		$number = 0;
+		foreach ( str_split( strtoupper( trim( $label ) ) ) as $char ) {
+			if ( $char < 'A' || $char > 'Z' ) {
+				continue;
+			}
+
+			$number = ( $number * 26 ) + ( ord( $char ) - 64 );
+		}
+
+		return $number;
+	}
+
+	/**
+	 * Parse newline venue mappings such as "Gold: A-C | 1500".
+	 *
+	 * @param string $raw Raw mapping text.
+	 * @return array<int,array{name:string,range:string,note:string}>
+	 */
+	private function parse_layout_lines( $raw ) {
+		$items = array();
+		foreach ( preg_split( '/\r\n|\r|\n/', (string) $raw ) as $line ) {
+			$line = trim( $line );
+			if ( '' === $line || false === strpos( $line, ':' ) ) {
+				continue;
+			}
+
+			list( $name, $details ) = array_map( 'trim', explode( ':', $line, 2 ) );
+			$parts                  = array_map( 'trim', explode( '|', $details, 2 ) );
+			$items[]                = array(
+				'name'  => $name,
+				'range' => $parts[0],
+				'note'  => isset( $parts[1] ) ? $parts[1] : '',
+			);
+		}
+
+		return $items;
+	}
+
+	/**
+	 * Find the first section/tier label that contains a row label.
+	 *
+	 * @param string $row_label Row label.
+	 * @param array  $items Parsed layout lines.
+	 * @return string
+	 */
+	private function find_layout_label_for_row( $row_label, $items ) {
+		foreach ( $items as $item ) {
+			if ( empty( $item['range'] ) ) {
+				continue;
+			}
+
+			if ( false !== strpos( $item['range'], '-' ) ) {
+				list( $start, $end ) = array_map( 'trim', explode( '-', $item['range'], 2 ) );
+				$row_number   = $this->get_row_number( $row_label );
+				$start_number = $this->get_row_number( $start );
+				$end_number   = $this->get_row_number( $end );
+				if ( $row_number >= $start_number && $row_number <= $end_number ) {
+					return $item['name'];
+				}
+			} elseif ( $row_label === $item['range'] ) {
+				return $item['name'];
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * Render parsed section/tier legend.
+	 *
+	 * @param string $title Legend title.
+	 * @param array  $items Parsed layout lines.
+	 */
+	private function render_layout_legend( $title, $items ) {
+		if ( empty( $items ) ) {
+			return;
+		}
+		?>
+		<div class="tbr-layout-legend">
+			<strong><?php echo esc_html( $title ); ?></strong>
+			<ul>
+				<?php foreach ( $items as $item ) : ?>
+					<li><?php echo esc_html( $item['name'] . ': ' . $item['range'] . ( $item['note'] ? ' (' . $item['note'] . ')' : '' ) ); ?></li>
+				<?php endforeach; ?>
+			</ul>
+		</div>
+		<?php
+	}
+
 	/** Render booking shortcode. */
 	public function render_event_shortcode( $atts ) {
 		$atts       = shortcode_atts( array( 'id' => 0 ), $atts, 'ticket_booking_event' );
@@ -193,23 +308,43 @@ class Ticket_Booking_Reviews_Plugin {
 			return '';
 		}
 
-		$rows    = max( 1, absint( get_post_meta( $event_id, '_tbr_seat_rows', true ) ) );
-		$cols    = max( 1, absint( get_post_meta( $event_id, '_tbr_seat_columns', true ) ) );
-		$blocked = array_filter( array_map( 'trim', explode( ',', (string) get_post_meta( $event_id, '_tbr_blocked_seats', true ) ) ) );
+		$rows           = max( 1, absint( get_post_meta( $event_id, '_tbr_seat_rows', true ) ) );
+		$cols           = max( 1, absint( get_post_meta( $event_id, '_tbr_seat_columns', true ) ) );
+		$blocked        = array_filter( array_map( 'trim', explode( ',', (string) get_post_meta( $event_id, '_tbr_blocked_seats', true ) ) ) );
+		$type           = get_post_meta( $event_id, '_tbr_event_type', true );
+		$screen         = get_post_meta( $event_id, '_tbr_screen_position', true );
+		$ends           = get_post_meta( $event_id, '_tbr_pavilion_ends', true );
+		$sections       = $this->parse_layout_lines( get_post_meta( $event_id, '_tbr_seat_sections', true ) );
+		$tiers          = $this->parse_layout_lines( get_post_meta( $event_id, '_tbr_seat_tiers', true ) );
+		$position_notes = get_post_meta( $event_id, '_tbr_seat_position_notes', true );
 		ob_start();
 		?>
 		<div class="tbr-booking" data-event-id="<?php echo esc_attr( $event_id ); ?>">
 			<h3><?php echo esc_html( get_the_title( $event_id ) ); ?></h3>
 			<p class="tbr-meta"><?php echo esc_html( get_post_meta( $event_id, '_tbr_venue', true ) ); ?> <?php echo esc_html( get_post_meta( $event_id, '_tbr_starts_at', true ) ); ?></p>
+			<?php $this->render_layout_legend( __( 'Sections / stands', 'ticket-booking-reviews' ), $sections ); ?>
+			<?php $this->render_layout_legend( __( 'Seat tiers', 'ticket-booking-reviews' ), $tiers ); ?>
+			<?php if ( $position_notes ) : ?>
+				<div class="tbr-layout-notes"><strong><?php esc_html_e( 'Seat position notes', 'ticket-booking-reviews' ); ?></strong><pre><?php echo esc_html( $position_notes ); ?></pre></div>
+			<?php endif; ?>
 			<form method="post" action="<?php echo esc_url( $product_id && function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : '' ); ?>">
+				<?php if ( 'movie_theater' === $type && 'front' === $screen ) : ?>
+					<div class="tbr-screen"><?php esc_html_e( 'Screen', 'ticket-booking-reviews' ); ?></div>
+				<?php endif; ?>
+				<?php if ( 'cricket_match' === $type && $ends ) : ?>
+					<div class="tbr-pavilion-ends"><?php echo esc_html( $ends ); ?></div>
+				<?php endif; ?>
 				<div class="tbr-seat-map" role="group" aria-label="<?php esc_attr_e( 'Choose seats', 'ticket-booking-reviews' ); ?>">
 					<?php for ( $row = 1; $row <= $rows; $row++ ) : $row_label = $this->get_row_label( $row ); ?>
-						<div class="tbr-seat-row"><span class="tbr-row-label"><?php echo esc_html( $row_label ); ?></span>
+						<div class="tbr-seat-row" data-section="<?php echo esc_attr( $this->find_layout_label_for_row( $row_label, $sections ) ); ?>" data-tier="<?php echo esc_attr( $this->find_layout_label_for_row( $row_label, $tiers ) ); ?>"><span class="tbr-row-label"><?php echo esc_html( $row_label ); ?></span>
 						<?php for ( $col = 1; $col <= $cols; $col++ ) : $seat = $row_label . $col; $is_blocked = in_array( $seat, $blocked, true ); ?>
 							<label class="tbr-seat <?php echo $is_blocked ? 'is-blocked' : ''; ?>"><input type="checkbox" name="tbr_seats[]" value="<?php echo esc_attr( $seat ); ?>" <?php disabled( $is_blocked ); ?> /><?php echo esc_html( $seat ); ?></label>
 						<?php endfor; ?></div>
 					<?php endfor; ?>
 				</div>
+				<?php if ( 'movie_theater' === $type && 'back' === $screen ) : ?>
+					<div class="tbr-screen"><?php esc_html_e( 'Screen', 'ticket-booking-reviews' ); ?></div>
+				<?php endif; ?>
 				<input type="hidden" name="add-to-cart" value="<?php echo esc_attr( $product_id ); ?>" />
 				<input type="hidden" name="tbr_event_id" value="<?php echo esc_attr( $event_id ); ?>" />
 				<button type="submit" class="button tbr-book-button" <?php disabled( ! $product_id ); ?>><?php esc_html_e( 'Book selected tickets', 'ticket-booking-reviews' ); ?></button>
@@ -219,11 +354,52 @@ class Ticket_Booking_Reviews_Plugin {
 		return ob_get_clean();
 	}
 
+	/**
+	 * Render a frontend list of upcoming ticket events.
+	 *
+	 * @param array $atts Shortcode attributes.
+	 * @return string
+	 */
+	public function render_events_list_shortcode( $atts ) {
+		$atts  = shortcode_atts( array( 'limit' => 12 ), $atts, 'ticket_booking_events' );
+		$query = new WP_Query(
+			array(
+				'post_type'      => 'tbr_event',
+				'posts_per_page' => max( 1, absint( $atts['limit'] ) ),
+				'post_status'    => 'publish',
+				'meta_key'       => '_tbr_starts_at',
+				'orderby'        => 'meta_value',
+				'order'          => 'ASC',
+			)
+		);
+
+		ob_start();
+		?>
+		<div class="tbr-events-list">
+			<?php while ( $query->have_posts() ) : $query->the_post(); ?>
+				<article class="tbr-event-card">
+					<?php if ( has_post_thumbnail() ) : ?>
+						<a href="<?php the_permalink(); ?>"><?php the_post_thumbnail( 'medium' ); ?></a>
+					<?php endif; ?>
+					<h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+					<p><?php echo esc_html( get_post_meta( get_the_ID(), '_tbr_venue', true ) ); ?></p>
+					<p><?php echo esc_html( get_post_meta( get_the_ID(), '_tbr_starts_at', true ) ); ?></p>
+					<a class="button" href="<?php the_permalink(); ?>"><?php esc_html_e( 'View tickets', 'ticket-booking-reviews' ); ?></a>
+				</article>
+			<?php endwhile; wp_reset_postdata(); ?>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
+
 	/** Add selected seats to WooCommerce cart item. */
 	public function add_cart_item_data( $cart_item_data, $product_id, $variation_id ) {
 		if ( isset( $_POST['tbr_event_id'] ) ) {
-			$cart_item_data['tbr_event_id'] = absint( $_POST['tbr_event_id'] );
-			$cart_item_data['tbr_seats']    = isset( $_POST['tbr_seats'] ) ? array_map( 'sanitize_text_field', wp_unslash( (array) $_POST['tbr_seats'] ) ) : array();
+			$event_id                      = absint( $_POST['tbr_event_id'] );
+			$blocked                       = array_filter( array_map( 'trim', explode( ',', (string) get_post_meta( $event_id, '_tbr_blocked_seats', true ) ) ) );
+			$selected_seats                = isset( $_POST['tbr_seats'] ) ? array_map( 'sanitize_text_field', wp_unslash( (array) $_POST['tbr_seats'] ) ) : array();
+			$cart_item_data['tbr_event_id'] = $event_id;
+			$cart_item_data['tbr_seats']    = array_values( array_diff( $selected_seats, $blocked ) );
 			$cart_item_data['unique_key']    = md5( wp_json_encode( $cart_item_data ) . microtime() );
 		}
 		return $cart_item_data;
