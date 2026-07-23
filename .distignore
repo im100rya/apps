@@ -1,9 +1,0 @@
-.git
-.github
-.gitignore
-composer.json
-composer.lock
-phpcs.xml.dist
-phpunit.xml.dist
-tests
-docs
